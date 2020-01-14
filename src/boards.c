@@ -269,18 +269,18 @@ void led_state(uint32_t state)
         case STATE_BLE_CONNECTED:
           new_rgb_color = 0x0000ff;
           #ifdef LED_SECONDARY_PIN
-          secondary_cycle_length = 3000;
+          secondary_cycle_length = 300;
           #else
-          primary_cycle_length = 3000;
+          primary_cycle_length = 300;
           #endif
           break;
 
         case STATE_BLE_DISCONNECTED:
           new_rgb_color = 0xff00ff;
           #ifdef LED_SECONDARY_PIN
-          secondary_cycle_length = 300;
+          secondary_cycle_length = 3000;
           #else
-          primary_cycle_length = 300;
+          primary_cycle_length = 3000;
           #endif
           break;
 
