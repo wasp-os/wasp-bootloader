@@ -193,8 +193,10 @@ int main(void)
   // DFU button pressed
   dfu_start  = dfu_start || button_pressed(BUTTON_DFU);
 
+#if BUTTONS_NUMBER > 1
   // DFU + FRESET are pressed --> OTA
   _ota_dfu = _ota_dfu  || ( button_pressed(BUTTON_DFU) && button_pressed(BUTTON_FRESET) ) ;
+#endif
 
   bool const valid_app = bootloader_app_is_valid(DFU_BANK_0_REGION_START);
 
@@ -219,6 +221,11 @@ int main(void)
   }
 
   (*dbl_reset_mem) = 0;
+
+#if BUTTONS_NUMBER < 2
+  // set BLE/ota DFU by default unless asked for serial as we don't have button to select it
+  _ota_dfu = _ota_dfu  || !serial_only_dfu;
+#endif
 
   if ( dfu_start || !valid_app )
   {
@@ -246,12 +253,13 @@ int main(void)
     }
   }
 
+#if BUTTONS_NUMBER > 1
   // Adafruit Factory reset
   if ( !button_pressed(BUTTON_DFU) && button_pressed(BUTTON_FRESET) )
   {
     adafruit_factory_reset();
   }
-
+#endif
   // Reset Board
   board_teardown();
 

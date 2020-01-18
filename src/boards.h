@@ -36,7 +36,7 @@
 #define BUTTON_DFU      BUTTON_1
 #endif
 
-#ifndef BUTTON_FRESET
+#if !defined(BUTTON_FRESET) && BUTTONS_NUMBER > 1
 #define BUTTON_FRESET   BUTTON_2
 #endif
 
@@ -91,9 +91,10 @@ void led_tick(void);
 //--------------------------------------------------------------------+
 // BUTTONS
 //--------------------------------------------------------------------+
-// Make sure we have at least two buttons (DFU + FRESET since DFU+FRST=OTA)
-#if BUTTONS_NUMBER < 2
-#error "At least two buttons required in the BSP (see 'BUTTONS_NUMBER')"
+// Make sure we have at least a DFU button (if there is only one button
+// then we will have OTA DFU only since we cannot have DFU+FRST=OTA)
+#if BUTTONS_NUMBER < 1
+#error "At least one button required in the BSP (see 'BUTTONS_NUMBER')"
 #endif
 
 void button_init(uint32_t pin);

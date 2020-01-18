@@ -68,14 +68,18 @@ void board_init(void)
   NRF_CLOCK->TASKS_LFCLKSTART = 1UL;
 
   button_init(BUTTON_DFU);
+#ifndef BUTTON_FRESET
   button_init(BUTTON_FRESET);
+#endif
   NRFX_DELAY_US(100); // wait for the pin state is stable
 
   // use PMW0 for LED RED
+#if LEDS_NUMBER > 0
   led_pwm_init(LED_PRIMARY, LED_PRIMARY_PIN);
-  #if LEDS_NUMBER > 1
+#endif
+#if LEDS_NUMBER > 1
   led_pwm_init(LED_SECONDARY, LED_SECONDARY_PIN);
-  #endif
+#endif
 
   // use neopixel for use enumeration
 #if defined(LED_NEOPIXEL) || defined(LED_RGB_RED_PIN)
@@ -98,12 +102,14 @@ void board_teardown(void)
   // Disable systick, turn off LEDs
   SysTick->CTRL = 0;
 
+#if LEDS_NUMBER > 0
   // Disable and reset PWM for LEDs
   led_pwm_teardown();
-
+#endif
 #if defined(LED_NEOPIXEL) || defined(LED_RGB_RED_PIN)
   neopixel_teardown();
 #endif
+ 
   // Button
 
   // Stop RTC1 used by app_timer
@@ -121,8 +127,9 @@ static uint32_t _systick_count = 0;
 void SysTick_Handler(void)
 {
   _systick_count++;
-
+#if LEDS_NUMBER > 0
   led_tick();
+#endif
 }
 
 
@@ -130,6 +137,7 @@ uint32_t tusb_hal_millis(void)
 {
   return ( ( ((uint64_t)app_timer_cnt_get())*1000*(APP_TIMER_CONFIG_RTC_FREQUENCY+1)) / APP_TIMER_CLOCK_FREQ );
 }
+#if LEDS_NUMBER > 0
 
 void pwm_teardown(NRF_PWM_Type* pwm )
 {
@@ -297,6 +305,11 @@ void led_state(uint32_t state)
     (void) final_color;
     #endif
 }
+#else //  LEDS_NUMBER > 0
+void led_state(uint32_t state)
+{
+}
+#endif
 
 #ifdef LED_NEOPIXEL
 
