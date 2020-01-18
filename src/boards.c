@@ -24,6 +24,7 @@
 
 #include "boards.h"
 #include "nrf_pwm.h"
+#include "nrf_wdt.h"
 #include "app_scheduler.h"
 #include "app_timer.h"
 
@@ -126,12 +127,26 @@ void board_teardown(void)
 }
 
 static uint32_t _systick_count = 0;
+static uint32_t _long_press_count = 0;
 void SysTick_Handler(void)
 {
   _systick_count++;
 #if LEDS_NUMBER > 0
   led_tick();
 #endif
+
+  /*
+   * Detect a long press of the DFU button. When found try to launch the
+   * application regardless of the DFU button state.
+   */
+  if (button_pressed(BUTTON_DFU)) {
+    if (_long_press_count++ >  (2 * 1000)) {
+      NRF_POWER->GPREGRET = BOARD_MAGIC_FORCE_APP_BOOT;
+      NVIC_SystemReset();
+    }
+  } else {
+    _long_press_count = 0;
+  }
 }
 
 
@@ -453,3 +468,18 @@ void neopixel_write (uint8_t *pixels)
   led_pwm_duty_cycle(LED_RGB_BLUE, pixels[0]);
 }
 #endif
+
+void wdt_init(void)
+{
+  // 1 => keep running during a sleep, stop during SWD debug
+  nrf_wdt_behaviour_set(NRF_WDT, 1);
+
+  // timeout after 5 seconds
+  nrf_wdt_reload_value_set(NRF_WDT, 5 * 32768);
+
+  // enable the 0th channel
+  nrf_wdt_reload_request_enable(NRF_WDT, NRF_WDT_RR0);
+
+  // set it running
+  nrf_wdt_task_trigger(NRF_WDT, NRF_WDT_TASK_START);
+}

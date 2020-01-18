@@ -60,6 +60,8 @@
 #define BOARD_RGB_BRIGHTNESS 0x101010
 #endif
 
+#define BOARD_MAGIC_FORCE_APP_BOOT 0x65
+
 // Helper function
 #define memclr(buffer, size)                memset(buffer, 0, size)
 #define varclr(_var)                        memclr(_var, sizeof(*(_var)))
@@ -105,6 +107,8 @@ void button_init(uint32_t pin);
 bool button_pressed(uint32_t pin);
 
 bool is_ota(void);
+
+void wdt_init(void);
 
 //--------------------------------------------------------------------+
 // DEBUG

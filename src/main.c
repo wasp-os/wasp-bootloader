@@ -103,6 +103,7 @@ void usb_teardown(void);
 #define DFU_MAGIC_OTA_RESET             0xA8
 #define DFU_MAGIC_SERIAL_ONLY_RESET     0x4e
 #define DFU_MAGIC_UF2_RESET             0x57
+#define DFU_MAGIC_FORCE_APP_BOOT        BOARD_MAGIC_FORCE_APP_BOOT       // 0x65
 
 #define DFU_DBL_RESET_MAGIC             0x5A1AD5      // SALADS
 #define DFU_DBL_RESET_DELAY             500
@@ -155,7 +156,9 @@ int main(void)
   bool sd_inited = (NRF_POWER->GPREGRET == DFU_MAGIC_OTA_APPJUM);
 
   // Start Bootloader in BLE OTA mode
-  _ota_dfu = (NRF_POWER->GPREGRET == DFU_MAGIC_OTA_APPJUM) || (NRF_POWER->GPREGRET == DFU_MAGIC_OTA_RESET);
+  _ota_dfu = (NRF_POWER->GPREGRET == DFU_MAGIC_OTA_APPJUM) ||
+	     (NRF_POWER->GPREGRET == DFU_MAGIC_OTA_RESET) ||
+	     (NRF_POWER->RESETREAS & NRF_POWER_RESETREAS_DOG_MASK);
 
   // Serial only mode
   bool serial_only_dfu = (NRF_POWER->GPREGRET == DFU_MAGIC_SERIAL_ONLY_RESET);
@@ -164,8 +167,14 @@ int main(void)
   bool dfu_start = _ota_dfu || serial_only_dfu || (NRF_POWER->GPREGRET == DFU_MAGIC_UF2_RESET) ||
                     (((*dbl_reset_mem) == DFU_DBL_RESET_MAGIC) && (NRF_POWER->RESETREAS & POWER_RESETREAS_RESETPIN_Msk));
 
+  // override the button status (but not GPREGREG or RESETREAS)
+  bool force_app_boot = (NRF_POWER->GPREGRET == DFU_MAGIC_FORCE_APP_BOOT);
+
   // Clear GPREGRET if it is our values
-  if (dfu_start) NRF_POWER->GPREGRET = 0;
+  if (dfu_start || force_app_boot) {
+    NRF_POWER->GPREGRET = 0;
+    nrf_power_resetreas_clear(NRF_POWER, NRF_POWER_RESETREAS_DOG_MASK);
+  }
 
   // Save bootloader version to pre-defined register, retrieved by application
   BOOTLOADER_VERSION_REGISTER = (MK_BOOTLOADER_VERSION);
@@ -191,11 +200,14 @@ int main(void)
 
   /*------------- Determine DFU mode (Serial, OTA, FRESET or normal) -------------*/
   // DFU button pressed
-  dfu_start  = dfu_start || button_pressed(BUTTON_DFU);
+  dfu_start  = dfu_start || (!force_app_boot && button_pressed(BUTTON_DFU));
 
-#if BUTTONS_NUMBER > 1
+#if BUTTONS_NUMBER >= 2
   // DFU + FRESET are pressed --> OTA
   _ota_dfu = _ota_dfu  || ( button_pressed(BUTTON_DFU) && button_pressed(BUTTON_FRESET) ) ;
+#else
+  // No FRESET button so set OTA mode unless a magic reset requested serial mode
+  _ota_dfu = _ota_dfu  || !serial_only_dfu;
 #endif
 
   bool const valid_app = bootloader_app_is_valid(DFU_BANK_0_REGION_START);
@@ -221,11 +233,6 @@ int main(void)
   }
 
   (*dbl_reset_mem) = 0;
-
-#if BUTTONS_NUMBER < 2
-  // set BLE/ota DFU by default unless asked for serial as we don't have button to select it
-  _ota_dfu = _ota_dfu  || !serial_only_dfu;
-#endif
 
   if ( dfu_start || !valid_app )
   {
@@ -266,6 +273,9 @@ int main(void)
   // Jump to application if valid
   if (bootloader_app_is_valid(DFU_BANK_0_REGION_START) && !bootloader_dfu_sd_in_progress())
   {
+    // Set the watchdog running before we start the payload
+    wdt_init();
+
     // MBR must be init before start application
     if ( !sd_inited ) softdev_mbr_init();
 
