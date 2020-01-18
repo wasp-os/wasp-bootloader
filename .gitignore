@@ -56,3 +56,4 @@ _build-*/
 bin/
 *.emSession
 *.jlink
+.*.swp
