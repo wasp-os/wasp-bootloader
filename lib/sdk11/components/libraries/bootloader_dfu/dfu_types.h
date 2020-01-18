@@ -39,7 +39,7 @@
 // Flash = 512 KB
 #if defined(NRF52832_XXAA) || defined(NRF52833_XXAA)
 
-#define BOOTLOADER_REGION_START             0x00074000                  /**< This field should correspond to start address of the bootloader, found in UICR.RESERVED, 0x10001014, register. This value is used for sanity check, so the bootloader will fail immediately if this value differs from runtime value. The value is used to determine max application size for updating. */
+#define BOOTLOADER_REGION_START             0x00078000                  /**< This field should correspond to start address of the bootloader, found in UICR.RESERVED, 0x10001014, register. This value is used for sanity check, so the bootloader will fail immediately if this value differs from runtime value. The value is used to determine max application size for updating. */
 #define BOOTLOADER_SETTINGS_ADDRESS         0x0007F000                  /**< The field specifies the page location of the bootloader settings address. */
 #define BOOTLOADER_MBR_PARAMS_PAGE_ADDRESS  0x0007E000                  /**< The field specifies the page location of the mbr params page address. */
 
