@@ -42,20 +42,22 @@
 //------------- IMPLEMENTATION -------------//
 void button_init(uint32_t pin)
 {
-  if ( BUTTON_PULL == NRF_GPIO_PIN_PULLDOWN )
-  {
-    nrf_gpio_cfg_sense_input(pin, BUTTON_PULL, NRF_GPIO_PIN_SENSE_HIGH);
-  }
-  else
-  {
-    nrf_gpio_cfg_sense_input(pin, BUTTON_PULL, NRF_GPIO_PIN_SENSE_LOW);
-  }
+  nrf_gpio_cfg_sense_input(pin, BUTTON_PULL, NRF_GPIO_PIN_SENSE_LOW);
+#ifdef BUTTON_ENABLE
+  /*
+   * BUTTON_ENABLE is used when a switch is connected to another GPIO pin
+   * rather than the Vcc or ground. In the bootloader we'll just permanently
+   * push the enable pin to whatever value the sense pin thinks is the
+   * active one.
+   */
+  nrf_gpio_cfg_output(BUTTON_ENABLE);
+  nrf_gpio_pin_write(BUTTON_ENABLE, BUTTON_ACTIVE);
+#endif
 }
 
 bool button_pressed(uint32_t pin)
 {
-  uint32_t const active_state = (BUTTON_PULL == NRF_GPIO_PIN_PULLDOWN ? 1 : 0);
-  return nrf_gpio_pin_read(pin) == active_state;
+  return (nrf_gpio_pin_read(pin) == BUTTON_ACTIVE) ? true : false;
 }
 
 void board_init(void)
@@ -68,7 +70,7 @@ void board_init(void)
   NRF_CLOCK->TASKS_LFCLKSTART = 1UL;
 
   button_init(BUTTON_DFU);
-#ifndef BUTTON_FRESET
+#ifdef BUTTON_FRESET
   button_init(BUTTON_FRESET);
 #endif
   NRFX_DELAY_US(100); // wait for the pin state is stable

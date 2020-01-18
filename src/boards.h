@@ -39,6 +39,10 @@
 #if !defined(BUTTON_FRESET) && BUTTONS_NUMBER > 1
 #define BUTTON_FRESET   BUTTON_2
 #endif
+#ifndef BUTTON_ACTIVE
+/* default to active-low signals */
+#define BUTTON_ACTIVE 0
+#endif
 
 // The primary LED is usually Red but not in all cases.
 #define LED_PRIMARY 0
