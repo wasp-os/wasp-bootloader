@@ -43,7 +43,7 @@
 //------------- IMPLEMENTATION -------------//
 void button_init(uint32_t pin)
 {
-  nrf_gpio_cfg_sense_input(pin, BUTTON_PULL, NRF_GPIO_PIN_SENSE_LOW);
+  nrf_gpio_cfg_sense_input(pin, BUTTON_PULL, NRF_GPIO_PIN_NOSENSE);
 #ifdef BUTTON_ENABLE
   /*
    * BUTTON_ENABLE is used when a switch is connected to another GPIO pin
