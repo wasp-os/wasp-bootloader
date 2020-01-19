@@ -484,7 +484,9 @@ void neopixel_write (uint8_t *pixels)
 void wdt_init(void)
 {
   // 1 => keep running during a sleep, stop during SWD debug
-  nrf_wdt_behaviour_set(NRF_WDT, 1);
+  // 9 => run during sleep and SWD debug (e.g. most robust but
+  //      makes debugger attachment difficult)
+  nrf_wdt_behaviour_set(NRF_WDT, 9);
 
   // timeout after 5 seconds
   nrf_wdt_reload_value_set(NRF_WDT, 5 * 32768);
