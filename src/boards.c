@@ -63,6 +63,10 @@ bool button_pressed(uint32_t pin)
 
 void board_init(void)
 {
+  // the watchdog has a long timeout and, when we are running in bootloader
+  // mode, will be fed by the systick handler
+  wdt_init();
+
   // stop LF clock just in case we jump from application without reset
   NRF_CLOCK->TASKS_LFCLKSTOP = 1UL;
 
@@ -134,6 +138,14 @@ void SysTick_Handler(void)
 #if LEDS_NUMBER > 0
   led_tick();
 #endif
+
+  /*
+   * Feed the dog... this is a backstop. The *only* reason we are running
+   * the watchdog is to help us recover if the bootloader crashes in some
+   * way that makes it impossible for us to reboot using the button test
+   * code below. This is OK to feed it from a periodic interrupt.
+   */
+  nrf_wdt_reload_request_set(NRF_WDT, 0);
 
   /*
    * Detect a long press of the DFU button. When found try to launch the

@@ -273,9 +273,6 @@ int main(void)
   // Jump to application if valid
   if (bootloader_app_is_valid(DFU_BANK_0_REGION_START) && !bootloader_dfu_sd_in_progress())
   {
-    // Set the watchdog running before we start the payload
-    wdt_init();
-
     // MBR must be init before start application
     if ( !sd_inited ) softdev_mbr_init();
 
