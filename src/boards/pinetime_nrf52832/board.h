@@ -51,5 +51,6 @@
 // Used as model string in OTA mode
 #define BLEDIS_MANUFACTURER   "Pine64"
 #define BLEDIS_MODEL          "PineTime"
+#define BLEDIS_DEVICE_NAME    "PineDFU"
 
 #endif // _PINETIME_NRF52832_H
