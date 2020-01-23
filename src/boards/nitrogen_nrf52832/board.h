@@ -53,5 +53,6 @@
 // Used as model string in OTA mode
 #define BLEDIS_MANUFACTURER   "96Boards"
 #define BLEDIS_MODEL          "Nitrogen"
+#define BLEDIS_DEVICE_NAME    "NitroDFU"
 
 #endif // _NITROGEN_NRF52832_H
