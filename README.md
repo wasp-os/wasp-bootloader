@@ -1,3 +1,19 @@
+# WASP bootloader
+
+The WASP bootloader is a fork of the Adafruit nRF52 Bootloader modified to robustly
+support form factor devices without a reset button and, in some cases, also no serial
+port. If supports OTA application updates and to support development using form-factor
+devices the WASP bootloader co-operates with the application payload to implement a,
+watchdog enforced, a long press reset using regular (not-reset) buttons.
+
+The additional boards supported by the WASP bootloader are:
+
+ * [Pine64 PineTime](https://www.pine64.org/pinetime/)
+ * [Desay DS-D6](https://github.com/fanoush/ds-d6)
+ * [96Boards Nitrogen](https://www.96boards.org/product/nitrogen/)
+
+Note: *The Nitrogen is not a form-factor board. It is a test target used to test for regressions before spending time pushing the bootloader to the form-factor devices.* 
+
 # Adafruit nRF52 Bootloader
 
 [![Build Status](https://github.com/adafruit/Adafruit_nRF52_Bootloader/workflows/Build/badge.svg)](https://github.com/adafruit/Adafruit_nRF52_Bootloader/actions)
