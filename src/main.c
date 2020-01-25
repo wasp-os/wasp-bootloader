@@ -110,7 +110,7 @@ void usb_teardown(void);
 #define DFU_DBL_RESET_MEM               0x20007F7C
 
 #define BOOTLOADER_VERSION_REGISTER     NRF_TIMER2->CC[0]
-#define DFU_SERIAL_STARTUP_INTERVAL     3000
+#define DFU_SERIAL_STARTUP_INTERVAL     2000
 
 // These value must be the same with one in dfu_transport_ble.c
 #define BLEGAP_EVENT_LENGTH             6
@@ -230,6 +230,9 @@ int main(void)
     // if RST is pressed during this delay --> if will enter dfu
     NRFX_DELAY_MS(DFU_DBL_RESET_DELAY);
 #endif
+  } else {
+    /* allow the splash screen to be seen ;-) */
+    NRFX_DELAY_MS(DFU_DBL_RESET_DELAY);
   }
 
   (*dbl_reset_mem) = 0;
