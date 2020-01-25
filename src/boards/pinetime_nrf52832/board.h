@@ -48,6 +48,8 @@
 #define RTS_PIN_NUMBER     0
 #define HWFC               false
 
+#define ST7789_SPI_DISPLAY
+
 // Used as model string in OTA mode
 #define BLEDIS_MANUFACTURER   "Pine64"
 #define BLEDIS_MODEL          "PineTime"
