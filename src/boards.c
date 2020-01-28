@@ -161,14 +161,18 @@ void SysTick_Handler(void)
    * way that makes it impossible for us to reboot using the button test
    * code below. This is OK to feed it from a periodic interrupt.
    */
-  nrf_wdt_reload_request_set(NRF_WDT, 0);
+  if (!button_pressed(BUTTON_DFU))
+    nrf_wdt_reload_request_set(NRF_WDT, 0);
 
   /*
-   * Detect a long press of the DFU button. When found try to launch the
-   * application regardless of the DFU button state.
+   * Detect and (trivially) debounce a press of the DFU button. When
+   * found try to launch the application regardless of the DFU button
+   * state. We ignore the button press for our first few seconds of life
+   * because makes it harder to accidentally start the application when
+   * recovering from a flat battery.
    */
   if (button_pressed(BUTTON_DFU)) {
-    if (_long_press_count++ >  (2 * 1000)) {
+    if (_systick_count > 4750 && _long_press_count++ >  250) {
       NRF_POWER->GPREGRET = BOARD_MAGIC_FORCE_APP_BOOT;
       NVIC_SystemReset();
     }
