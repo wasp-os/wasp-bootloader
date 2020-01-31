@@ -357,7 +357,9 @@ void led_state(uint32_t state)
 #else //  LEDS_NUMBER > 0
 void led_state(uint32_t state)
 {
+#ifdef ST7789_SPI_DISPLAY
   st7789_state(state);
+#endif
 }
 #endif
 
