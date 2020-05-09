@@ -28,6 +28,7 @@
 #include "nrf_wdt.h"
 #include "app_scheduler.h"
 #include "app_timer.h"
+#include "pnvram.h"
 
 //--------------------------------------------------------------------+
 // MACRO TYPEDEF CONSTANT ENUM DECLARATION
@@ -151,6 +152,7 @@ static uint32_t _long_press_count = 0;
 void SysTick_Handler(void)
 {
   _systick_count++;
+  pnvram_add_ms(pnvram, 1);
 #if LEDS_NUMBER > 0
   led_tick();
 #endif
