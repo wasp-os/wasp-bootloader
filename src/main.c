@@ -106,7 +106,7 @@ void usb_teardown(void);
 #define DFU_MAGIC_FORCE_APP_BOOT        BOARD_MAGIC_FORCE_APP_BOOT       // 0x65
 
 #define DFU_DBL_RESET_MAGIC             0x5A1AD5      // SALADS
-#define DFU_DBL_RESET_DELAY             500
+#define DFU_DBL_RESET_DELAY             2000
 #define DFU_DBL_RESET_MEM               0x20007F7C
 
 #define BOOTLOADER_VERSION_REGISTER     NRF_TIMER2->CC[0]

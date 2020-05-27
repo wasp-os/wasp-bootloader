@@ -174,7 +174,7 @@ void SysTick_Handler(void)
    * recovering from a flat battery.
    */
   if (button_pressed(BUTTON_DFU)) {
-    if (_systick_count > 4750 && _long_press_count++ >  250) {
+    if (_systick_count > 2000 && _long_press_count++ >  50) {
       NRF_POWER->GPREGRET = BOARD_MAGIC_FORCE_APP_BOOT;
       NVIC_SystemReset();
     }
