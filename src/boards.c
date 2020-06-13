@@ -824,7 +824,7 @@ void st7789_state(int state)
 	  if (y < 48) {
 	    memset(linebuffer, 0, sizeof(linebuffer));
 	  } else if (y < 76) {
-	    #ifdef _P8_NRF52832_H
+	    #ifdef BUTTON_ON_RIGHT
 	    memset(linebuffer+2*(240-54), 0, 54*2);
 	    #else
 	    memset(linebuffer, 0, 64*2);

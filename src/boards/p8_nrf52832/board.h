@@ -37,6 +37,7 @@
 #define BUTTON_1           17
 #define BUTTON_PULL        NRF_GPIO_PIN_NOPULL
 #define BUTTON_ACTIVE      1
+#define BUTTON_ON_RIGHT
 
 /*------------------------------------------------------------------*/
 /* UART
@@ -50,7 +51,7 @@
 #define ST7789_SPI_DISPLAY
 
 // Used as model string in OTA mode
-#define BLEDIS_MANUFACTURER   "UTELITE"
+#define BLEDIS_MANUFACTURER   "COLMI P8"
 #define BLEDIS_MODEL          "P8"
 #define BLEDIS_DEVICE_NAME    "P8DFU"
 
