@@ -32,7 +32,7 @@
 
 #include "board.h"
 
-#ifndef BUTTON_DFU
+#if !defined(BUTTON_DFU) && BUTTONS_NUMBER > 0
 #define BUTTON_DFU      BUTTON_1
 #endif
 
@@ -97,11 +97,6 @@ void led_tick(void);
 //--------------------------------------------------------------------+
 // BUTTONS
 //--------------------------------------------------------------------+
-// Make sure we have at least a DFU button (if there is only one button
-// then we will have OTA DFU only since we cannot have DFU+FRST=OTA)
-#if BUTTONS_NUMBER < 1
-#error "At least one button required in the BSP (see 'BUTTONS_NUMBER')"
-#endif
 
 void button_init(uint32_t pin);
 bool button_pressed(uint32_t pin);

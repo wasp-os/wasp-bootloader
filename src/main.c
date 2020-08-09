@@ -200,9 +200,16 @@ int main(void)
 
   /*------------- Determine DFU mode (Serial, OTA, FRESET or normal) -------------*/
   // DFU button pressed
+#ifdef BUTTON_DFU
+  // DFU button is pressed -> request DFU mode (unless forced to avoid)
   dfu_start  = dfu_start || (!force_app_boot && button_pressed(BUTTON_DFU));
+#else
+  //
+  // No DFU button so always request DFU mode!
+  dfu_start  = dfu_start || !force_app_boot;
+#endif
 
-#if BUTTONS_NUMBER >= 2
+#ifdef BUTTON_FRESET
   // DFU + FRESET are pressed --> OTA
   _ota_dfu = _ota_dfu  || ( button_pressed(BUTTON_DFU) && button_pressed(BUTTON_FRESET) ) ;
 #else

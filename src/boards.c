@@ -49,6 +49,7 @@ void st7789_teardown(void);
 #endif
 
 //------------- IMPLEMENTATION -------------//
+#if BUTTONS_NUMBER > 0
 void button_init(uint32_t pin)
 {
   nrf_gpio_cfg_sense_input(pin, BUTTON_PULL, NRF_GPIO_PIN_NOSENSE);
@@ -68,6 +69,7 @@ bool button_pressed(uint32_t pin)
 {
   return (nrf_gpio_pin_read(pin) == BUTTON_ACTIVE) ? true : false;
 }
+#endif
 
 void board_init(void)
 {
@@ -82,7 +84,9 @@ void board_init(void)
   NRF_CLOCK->LFCLKSRC = CLOCK_LFCLKSRC_SRC_RC;
   NRF_CLOCK->TASKS_LFCLKSTART = 1UL;
 
+#ifdef BUTTON_DFU
   button_init(BUTTON_DFU);
+#endif
 #ifdef BUTTON_FRESET
   button_init(BUTTON_FRESET);
 #endif
@@ -148,7 +152,9 @@ void board_teardown(void)
 }
 
 static uint32_t _systick_count = 0;
+#ifdef BUTTON_DFU
 static uint32_t _long_press_count = 0;
+#endif
 void SysTick_Handler(void)
 {
   _systick_count++;
@@ -161,9 +167,13 @@ void SysTick_Handler(void)
    * Feed the dog... this is a backstop. The *only* reason we are running
    * the watchdog is to help us recover if the bootloader crashes in some
    * way that makes it impossible for us to reboot using the button test
-   * code below. This is OK to feed it from a periodic interrupt.
+   * code below. This is OK to feed it from a periodic interrupt (even
+   * if there is no button it's better to feed the dog than reboot in
+   * the middle of flashing).
    */
+#ifdef BUTTON_DFU
   if (!button_pressed(BUTTON_DFU))
+#endif
     nrf_wdt_reload_request_set(NRF_WDT, 0);
 
   /*
@@ -173,6 +183,7 @@ void SysTick_Handler(void)
    * because makes it harder to accidentally start the application when
    * recovering from a flat battery.
    */
+#ifdef BUTTON_DFU
   if (button_pressed(BUTTON_DFU)) {
     if (_systick_count > 2750 && _long_press_count++ >  50) {
       NRF_POWER->GPREGRET = BOARD_MAGIC_FORCE_APP_BOOT;
@@ -181,6 +192,7 @@ void SysTick_Handler(void)
   } else {
     _long_press_count = 0;
   }
+#endif
 }
 
 
@@ -508,6 +520,10 @@ void neopixel_write (uint8_t *pixels)
 
 #ifdef ST7789_SPI_DISPLAY
 
+#ifndef BACKLIGHT_PIN_NUMBER
+#define BACKLIGHT_PIN_NUMBER 14 /* lowest level */
+#endif
+
 #define SPIx NRF_SPI0
 #define SPI_MODE NRF_SPI_MODE_3
 #define SPI_SCK 2
@@ -515,7 +531,7 @@ void neopixel_write (uint8_t *pixels)
 #define DISP_SS 25
 #define DISP_DC 18
 #define DISP_RESET 26
-#define BACKLIGHT 14 /* lowest level */
+#define BACKLIGHT BACKLIGHT_PIN_NUMBER
 
 void spi_init(void)
 {
@@ -634,7 +650,7 @@ void st7789_state(int state)
 
   uint8_t linebuffer[2*240];
 
-  #ifdef _P8_NRF52832_H
+#if defined(_P8_NRF52832_H) || defined(_K9_NRF52832_H)
   // 1-bit RLE, generated from res/p8dfu.png, 1355 bytes
   static const uint8_t rle[] = {
     0xff, 0x0, 0xff, 0x0, 0xff, 0x0, 0xff, 0x0, 0xff, 0x0, 0xff, 0x0,
