@@ -28,7 +28,7 @@
 #include "nrf_wdt.h"
 #include "app_scheduler.h"
 #include "app_timer.h"
-#include "pnvram.h"
+#include <pnvram.h>
 
 //--------------------------------------------------------------------+
 // MACRO TYPEDEF CONSTANT ENUM DECLARATION
