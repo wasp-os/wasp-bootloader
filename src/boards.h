@@ -32,8 +32,6 @@
 
 #include "board.h"
 
-#include <pnvram.h>
-
 #if !defined(BUTTON_DFU) && BUTTONS_NUMBER > 0
 #define BUTTON_DFU      BUTTON_1
 #endif
