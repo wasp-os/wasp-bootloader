@@ -57,6 +57,3 @@ bin/
 *.emSession
 *.jlink
 .*.swp
-
-# Boards with undefined pnvram
-src/electronut_labs_papyr
