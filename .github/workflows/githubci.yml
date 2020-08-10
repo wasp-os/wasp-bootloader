@@ -40,7 +40,7 @@ jobs:
       working-directory: tools
       env:
         #UPLOAD_URL: ${{ github.event.release.upload_url }}
-        UPLOAD_URL: ${{ steps.build.outputs.upload_url }}:  
+        UPLOAD_URL: ${{ steps.build.outputs.upload_url }}
         ADABOT_GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: "[ -z \"$ADABOT_GITHUB_ACCESS_TOKEN\" ] || python3 -u upload_release_files.py"
       
