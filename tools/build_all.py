@@ -66,5 +66,10 @@ total_time = time.monotonic() - total_time
 print(build_separator)
 print("Build Sumamary: {} \033[32msucceeded\033[0m, {} \033[31mfailed\033[0m and took {:.2f}s".format(success_count, fail_count, total_time))
 print(build_separator)
+print('Exit status:' + exit_status)
 
-sys.exit(exit_status)
+if success_count > 0:
+    print('Exit status:' + exit_status)
+    sys.exit(0)
+else:    
+    sys.exit(exit_status)
