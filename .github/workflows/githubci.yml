@@ -36,6 +36,7 @@ jobs:
       
     - name: Upload Release Asset
       #if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'rerequested')
+      if: github.event_name != ''
       working-directory: tools
       env:
         UPLOAD_URL: ${{ github.event.release.upload_url }}
