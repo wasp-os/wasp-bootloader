@@ -33,7 +33,9 @@ jobs:
 
     - name: Build
       id: build_it_all
-      run: python3 tools/build_all.py
+      run: |
+        python3 tools/build_all.py
+        ls -l
       
     - name: Upload Release Asset
       #if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'rerequested')
