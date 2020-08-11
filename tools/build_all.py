@@ -69,7 +69,7 @@ print(build_separator)
 print('Exit status:' + exit_status)
 
 if success_count > 0:
-    print('Exit status:' + exit_status)
+    print('Exit status:' + str(exit_status))
     sys.exit(0)
 else:    
     sys.exit(exit_status)
