@@ -21,7 +21,7 @@ for dirpath, dirnames, filenames in os.walk("../bin"):
         url_vars["label"] = label
         url = uritemplate.expand(os.environ["UPLOAD_URL"], url_vars)
         headers = {"content-type": "application/octet-stream"}
-        print("url - " + url)
+        print(url)
         with open(full_filename, "rb") as f:
             response = github.post(url, data=f, headers=headers)
         if not response.ok:
