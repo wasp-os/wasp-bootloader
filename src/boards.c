@@ -158,9 +158,7 @@ static uint32_t _long_press_count = 0;
 void SysTick_Handler(void)
 {
   _systick_count++;
-#ifdef PNVRAM
   pnvram_add_ms(pnvram, 1);
-#endif
 #if LEDS_NUMBER > 0
   led_tick();
 #endif
