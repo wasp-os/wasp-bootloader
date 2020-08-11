@@ -30,19 +30,15 @@ jobs:
         npm install --global xpm
         xpm install --global @xpack-dev-tools/arm-none-eabi-gcc@latest
         echo "::add-path::`echo $HOME/opt/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/*/.content/bin`"
-
+    
     - name: Build
-      id: build_it_all
-      run: |
-        python3 tools/build_all.py
-        ls -l
+      run: python3 tools/build_all.py
       
     - name: Upload Release Asset
-      #if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'rerequested')
+      if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'rerequested')
       #working-directory: tools
       env:
-        UPLOAD_URL: ${{ steps.build_it_all.outputs.upload_url }}
-      #  UPLOAD_URL: ${{ github.event.release.upload_url }}
-        run: echo $UPLOAD_URL
+        UPLOAD_URL: ${{ github.event.release.upload_url }}
         ADABOT_GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: "[ -z \"$ADABOT_GITHUB_ACCESS_TOKEN\" ] || python3 -u tools/upload_release_files.py"
+      
