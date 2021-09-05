@@ -178,6 +178,7 @@ endif
 # Assembly Files
 #******************************************************************************
 ASM_SOURCE_FILES  = $(NRFX_PATH)/mdk/gcc_startup_$(MCU_SUB_VARIANT).S
+#ASM_SOURCE_FILES += $(SRC_PATH)/main.S
 
 #******************************************************************************
 # INCLUDE PATH
@@ -235,6 +236,18 @@ CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in separate section. This will allow linker to dump unused functions
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin --short-enums -fstack-usage
+
+# Nordic Softdevice SDK header files contain inline assembler that has
+# broken contraints. As a result the IPA-modref pass, introduced in gcc-11,
+# is able to "prove" that arguments to wrapper functions generated with
+# the SVCALL() macro are unused and, as a result, the optimizer will remove
+# the code in the callers that sets up these arguments (which results in
+# a broken bootloader). The broken headers come from Nordic-supplied zip
+# files and are not easily patched so, for now, we'll simply disable the
+# new gcc-11 inter-procedural optimizations.
+ifeq (,$(findstring unrecognized,$(shell $(CC) $(CFLAGS) -fno-ipa-modref 2>&1)))
+CFLAGS += -fno-ipa-modref
+endif
 
 # Defined Symbol (MACROS)
 CFLAGS += -D__HEAP_SIZE=0
