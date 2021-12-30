@@ -36,9 +36,14 @@ jobs:
       
     - name: Upload Release Asset
       if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'rerequested')
-      working-directory: tools
       env:
         UPLOAD_URL: ${{ github.event.release.upload_url }}
         ADABOT_GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: "[ -z \"$ADABOT_GITHUB_ACCESS_TOKEN\" ] || python3 -u upload_release_files.py"
+      run: "[ -z \"$ADABOT_GITHUB_ACCESS_TOKEN\" ] || python3 -u tools/upload_release_files.py"
       
+    - name: Upload Artifacts
+      if: github.event_name != 'release'
+      uses: actions/upload-artifact@v2
+      with:
+        name: bin-artifacts
+        path: bin/  
