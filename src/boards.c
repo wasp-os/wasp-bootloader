@@ -149,6 +149,9 @@ void board_teardown(void)
 
   // Stop LF clock
   NRF_CLOCK->TASKS_LFCLKSTOP = 1UL;
+
+  // Stop UART0
+  NRF_UART0->ENABLE = 0;
 }
 
 static uint32_t _systick_count = 0;
