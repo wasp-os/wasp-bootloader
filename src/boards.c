@@ -933,11 +933,14 @@ void st7789_init(void)
   nrf_gpio_pin_set(DISP_RESET);
   NRFX_DELAY_MS(125);
 
-  /* initialize the display */
-  st7789_send(SLPOUT, NULL, 0);
-  NRFX_DELAY_MS(10);
+  /* initialize the display, and only then take it out of sleep mode: the
+   * ST7789P3, in PineTimes since 2026, can come up rotated if SLPOUT comes
+   * first
+   */
   for (const struct st7789_cmd *i = st7789_init_data; i->cmd != NOP; i++)
     st7789_send(i->cmd, i->data, i->len);
+  st7789_send(SLPOUT, NULL, 0);
+  NRFX_DELAY_MS(10);
 
   /* draw the initial screen content. this will take ~116ms so, with the
    * delay after the SLPOUT we will have complete the SLPOUT/SLPIN lock
